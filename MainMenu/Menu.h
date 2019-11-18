@@ -46,14 +46,18 @@ private:
 		SMASH_IT, TIME_CLIMB, LABYRINTH, AEROHOCKEY, TERRITORY
 	};
 	enum buttonAction{
-		NOTHING, PLAY, NEXT, PREVIOUS, EXIT
+		NOTHING, PLAY, NEXT, PREVIOUS, BACK, TOPSCORE, SETPOS, EXIT
+	};
+	enum levels
+	{
+		LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, LEVEL_5
 	};
 
 
 	struct MenuItem
 	{
 	public:
-		MenuItem(sf::Vector2f position, buttonAction action, std::string fileName);
+		MenuItem(sf::Vector2f position, buttonAction action, std::string fileName, bool maskFromCollor);
 		void Move(sf::Vector2f pos);
 		sf::Vector2f _position;
 		buttonAction _action;
@@ -64,8 +68,6 @@ private:
 		float animationTime;
 		sf::Clock animationClock;
 		int animationFrame;
-		sf::Font font;
-		sf::Text text;
 		sf::Vector2f _center;
 	};
 
@@ -76,6 +78,7 @@ private:
 
 	menuState _menuState;
 	int _currentGame;
+	int _currentLabyrinthLevel;
 	std::map<std::string, MenuItem*> _menuItems;
 	sf::Vector2f velocity;
 
@@ -85,10 +88,9 @@ private:
 	void score_board();
 
 
-	void game_selection_Menu_Draw();
+	void Draw();
 	void game_selection_Menu_Update();
 
-	void playing_Draw();
 	void playing_Update();
 
 	struct menuItemsDeallocator
@@ -100,10 +102,19 @@ private:
 	};
 	Menu::MenuItem* Get(std::string name) const;
 
+	sf::Font _font;
+
 	sf::Image smash_It_image;
 	sf::Image time_climb_image;
 	sf::Image labyrinth_image;
 	sf::Image aerohockey_image;
 	sf::Image territory_image;
+
+	sf::Image level_1;
+	sf::Image level_2;
+	sf::Image level_3;
+	sf::Image level_4;
+	sf::Image level_5;
+
 
 };
