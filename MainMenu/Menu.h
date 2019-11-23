@@ -5,6 +5,8 @@
 #include <sstream>
 #include <iostream>
 
+//#include"sClient.h"
+
 class Menu
 {
 
@@ -25,12 +27,13 @@ private:
 	void MenuLoop();
 	void Init_GAME_SELECTION();
 	void Init_SCORE_BOARD();
-	void Init_PLAYING();
+	void Init_GAME_PREPARATION();
+	void Init_READY_GAME();
 
 	bool initialized;
 	
-	const int SCREEN_WIDTH = 1366;
-	const int SCREEN_HEIGHT = 768;
+	const int SCREEN_WIDTH = 1920;
+	const int SCREEN_HEIGHT = 1080;
 	bool IsExiting();
 	sf::RenderWindow _mainWindow;
 
@@ -40,13 +43,13 @@ private:
 
 
 	enum menuState { 
-		EXITING, PLAYING, SCORE_BOARD, GAME_SELECTION 
+		EXITING, GAME_PREPARATION, SCORE_BOARD, GAME_SELECTION, READY_TO_PLAY
 	};
 	enum games {
 		SMASH_IT, TIME_CLIMB, LABYRINTH, AEROHOCKEY, TERRITORY
 	};
 	enum buttonAction{
-		NOTHING, PLAY, NEXT, PREVIOUS, BACK, TOPSCORE, SETPOS, EXIT
+		NOTHING, PLAY_GAMESELECTION, NEXT, PREVIOUS, BACK, TOPSCORE, SETPOS, PLAY_READY, EXIT
 	};
 	enum levels
 	{
@@ -83,15 +86,17 @@ private:
 	sf::Vector2f velocity;
 
 	float dist2(sf::Vector2f const & p1, sf::Vector2f const & p2);
-	void playing();
+	void game_preparation();
 	void game_selection_Menu();
 	void score_board();
+	void ready_game();
 
 
 	void Draw();
 	void game_selection_Menu_Update();
 
 	void playing_Update();
+
 
 	struct menuItemsDeallocator
 	{
@@ -116,5 +121,9 @@ private:
 	sf::Image level_4;
 	sf::Image level_5;
 
+	//sClient *client;
+
+	int makeClientData();
+	int _clicData;
 
 };

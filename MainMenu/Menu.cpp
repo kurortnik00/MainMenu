@@ -17,6 +17,7 @@ Menu::Menu()
 	background_image.loadFromFile("images/back_ground_1.png");
 	background_texture.loadFromImage(background_image);
 	background_sprite.setTexture(background_texture);
+	background_sprite.scale(1.5, 1.5);
 
 	
 	_font.loadFromFile("font/18123.ttf");
@@ -27,6 +28,7 @@ Menu::Menu()
 Menu::~Menu()
 {
 	std::for_each(_menuItems.begin(), _menuItems.end(), menuItemsDeallocator());
+	//delete(client);
 }
 
 
@@ -47,12 +49,15 @@ Menu::MenuItem::MenuItem(sf::Vector2f position, buttonAction action, std::string
 
 void Menu::Start(void)
 {
-	_mainWindow.create(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Menu");
-
+	_mainWindow.create(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Menu", sf::Style::Fullscreen);
 
 	_menuState = Menu::GAME_SELECTION;	
 	_currentGame = 0;
+	_clicData = 0;
 	_currentLabyrinthLevel = 0;
+
+	//client = new sClient;
+	//client->Init();
 
 	while (!IsExiting())
 	{
@@ -79,12 +84,13 @@ void Menu::Init_GAME_SELECTION()
 
 		
 
-		MenuItem *play_Button = new MenuItem(sf::Vector2f(500, 600), PLAY, "images/PLAY_button.png", true);
-		MenuItem *next_Button = new MenuItem(sf::Vector2f(1050, 650), NEXT, "images/NEXT_button.png", true);
-		MenuItem *previous_Button = new MenuItem(sf::Vector2f(150, 650), PREVIOUS, "images/PREV_button.png", true);
-		MenuItem *mainGame = new MenuItem(sf::Vector2f(350, 100), NOTHING, "images/Smash_It_Game.png");
-		MenuItem *leftGame = new MenuItem(sf::Vector2f(50, 200), NOTHING, "images/notMainGame.png");
-		MenuItem *rightGame = new MenuItem(sf::Vector2f(1150, 200), NOTHING, "images/notMainGame.png");
+		MenuItem *play_Button = new MenuItem(sf::Vector2f(SCREEN_WIDTH / 2 - 208, 900), PLAY_GAMESELECTION, "images/PLAY_button.png", true);
+		MenuItem *next_Button = new MenuItem(sf::Vector2f(1530, 900), NEXT, "images/NEXT_button.png", true);
+		MenuItem *previous_Button = new MenuItem(sf::Vector2f(160, 900), PREVIOUS, "images/PREV_button.png", true);
+		MenuItem *mainGame = new MenuItem(sf::Vector2f(460, 230), NOTHING, "images/Smash_It_Game.png");
+		//mainGame->_sprite.setScale(0.7, 0.7);
+		MenuItem *leftGame = new MenuItem(sf::Vector2f(100, 330), NOTHING, "images/notMainGame.png");
+		MenuItem *rightGame = new MenuItem(sf::Vector2f(1530, 330), NOTHING, "images/notMainGame.png");
 
 		_menuItems.insert(std::pair<std::string, MenuItem*>("play_Button", play_Button));
 		_menuItems.insert(std::pair<std::string, MenuItem*>("next_Button", next_Button));
@@ -99,7 +105,7 @@ void Menu::Init_GAME_SELECTION()
 	
 }
 
-void Menu::Init_PLAYING()
+void Menu::Init_GAME_PREPARATION()
 {
 	if (initialized) {
 		return;
@@ -112,9 +118,12 @@ void Menu::Init_PLAYING()
 		{
 		case Menu::SMASH_IT:
 		{
-			MenuItem *back_Button = new MenuItem(sf::Vector2f(SCREEN_WIDTH / 2 - 200, 300), BACK, "images/back_button.png");
-			MenuItem *topScore_Button = new MenuItem(sf::Vector2f(SCREEN_WIDTH / 2 - 200, 450), TOPSCORE, "images/top_score_button.png");
+			MenuItem *back_Button = new MenuItem(sf::Vector2f(20, 20), BACK, "images/back_button.png");
+			back_Button->_sprite.setScale(0.5, 0.5);
+			MenuItem *topScore_Button = new MenuItem(sf::Vector2f(SCREEN_WIDTH / 2 - 230, 500), TOPSCORE, "images/top_score_button.png");
+			MenuItem* play_Button = new MenuItem(sf::Vector2f(SCREEN_WIDTH / 2 - 230, 350), PLAY_READY, "images/PLAY_button.png");
 
+			_menuItems.insert(std::pair<std::string, MenuItem*>("play_Button", play_Button));
 			_menuItems.insert(std::pair<std::string, MenuItem*>("back_Button", back_Button));
 			_menuItems.insert(std::pair<std::string, MenuItem*>("topScore_Button", topScore_Button));
 			break;
@@ -122,10 +131,13 @@ void Menu::Init_PLAYING()
 
 		case Menu::TIME_CLIMB:
 		{
-			MenuItem *set_pos_Button = new MenuItem(sf::Vector2f(SCREEN_WIDTH / 2 - 200, 150), SETPOS, "images/set_pos_button.png");
-			MenuItem *back_Button = new MenuItem(sf::Vector2f(SCREEN_WIDTH / 2 - 200, 300), BACK, "images/back_button.png");
-			MenuItem *topScore_Button = new MenuItem(sf::Vector2f(SCREEN_WIDTH / 2 - 200, 450), TOPSCORE, "images/top_score_button.png");
+			MenuItem *set_pos_Button = new MenuItem(sf::Vector2f(SCREEN_WIDTH / 2 - 210, 450), SETPOS, "images/set_pos_button.png");
+			MenuItem *back_Button = new MenuItem(sf::Vector2f(20, 20), BACK, "images/back_button.png");
+			back_Button->_sprite.setScale(0.5, 0.5);
+			MenuItem *topScore_Button = new MenuItem(sf::Vector2f(SCREEN_WIDTH / 2 - 210, 600), TOPSCORE, "images/top_score_button.png");
+			MenuItem* play_Button = new MenuItem(sf::Vector2f(SCREEN_WIDTH / 2 - 210, 300), PLAY_READY, "images/PLAY_button.png");
 
+			_menuItems.insert(std::pair<std::string, MenuItem*>("play_Button", play_Button));
 			_menuItems.insert(std::pair<std::string, MenuItem*>("set_pos_Button", set_pos_Button));
 			_menuItems.insert(std::pair<std::string, MenuItem*>("back_Button", back_Button));
 			_menuItems.insert(std::pair<std::string, MenuItem*>("topScore_Button", topScore_Button));
@@ -138,13 +150,14 @@ void Menu::Init_PLAYING()
 			MenuItem *topScore_Button = new MenuItem(sf::Vector2f(SCREEN_WIDTH - 230, 20), TOPSCORE, "images/top_score_button.png");
 			topScore_Button->_sprite.setScale(0.5, 0.5);
 
-			MenuItem *next_Button = new MenuItem(sf::Vector2f(1050, 650), NEXT, "images/NEXT_button.png", true);
-			MenuItem *previous_Button = new MenuItem(sf::Vector2f(150, 650), PREVIOUS, "images/PREV_button.png", true);
-			MenuItem *mainLevel = new MenuItem(sf::Vector2f(350, 100), NOTHING, "images/level_1_m.png");
-			MenuItem *leftLevel = new MenuItem(sf::Vector2f(50, 200), NOTHING, "images/notMainGame.png");
-			MenuItem *rightLevel = new MenuItem(sf::Vector2f(1150, 200), NOTHING, "images/notMainGame.png");
-			MenuItem *play_Button = new MenuItem(sf::Vector2f(500, 600), PLAY, "images/PLAY_button.png", true);
+			MenuItem* play_Button = new MenuItem(sf::Vector2f(SCREEN_WIDTH / 2 - 208, 900), PLAY_READY, "images/PLAY_button.png");
+			MenuItem* next_Button = new MenuItem(sf::Vector2f(1530, 900), NEXT, "images/NEXT_button.png", true);
+			MenuItem* previous_Button = new MenuItem(sf::Vector2f(160, 900), PREVIOUS, "images/PREV_button.png", true);
 
+			MenuItem *mainLevel = new MenuItem(sf::Vector2f(460, 230), NOTHING, "images/level_1_m.png");
+			MenuItem *leftLevel = new MenuItem(sf::Vector2f(100, 330), NOTHING, "images/notMainGame.png");
+			MenuItem *rightLevel = new MenuItem(sf::Vector2f(1530, 330), NOTHING, "images/notMainGame.png");
+		
 
 
 			_menuItems.insert(std::pair<std::string, MenuItem*>("play_Button", play_Button));
@@ -160,18 +173,24 @@ void Menu::Init_PLAYING()
 		}
 		case Menu::AEROHOCKEY:
 		{
-			MenuItem *back_Button = new MenuItem(sf::Vector2f(SCREEN_WIDTH / 2 - 200, 300), BACK, "images/back_button.png");
-			MenuItem *topScore_Button = new MenuItem(sf::Vector2f(SCREEN_WIDTH / 2 - 200, 450), TOPSCORE, "images/top_score_button.png");
+			MenuItem *back_Button = new MenuItem(sf::Vector2f(20, 20), BACK, "images/back_button.png");
+			back_Button->_sprite.setScale(0.5, 0.5);
+			MenuItem* topScore_Button = new MenuItem(sf::Vector2f(SCREEN_WIDTH / 2 - 190, 500), TOPSCORE, "images/top_score_button.png");
+			MenuItem* play_Button = new MenuItem(sf::Vector2f(SCREEN_WIDTH / 2 - 190, 350), PLAY_READY, "images/PLAY_button.png");
 
+			_menuItems.insert(std::pair<std::string, MenuItem*>("play_Button", play_Button));
 			_menuItems.insert(std::pair<std::string, MenuItem*>("back_Button", back_Button));
 			_menuItems.insert(std::pair<std::string, MenuItem*>("topScore_Button", topScore_Button));
 			break;
 		}
 		case Menu::TERRITORY:
 		{
-			MenuItem *back_Button = new MenuItem(sf::Vector2f(SCREEN_WIDTH / 2 - 200, 300), BACK, "images/back_button.png");
-			MenuItem *topScore_Button = new MenuItem(sf::Vector2f(SCREEN_WIDTH / 2 - 200, 450), TOPSCORE, "images/top_score_button.png");
+			MenuItem *back_Button = new MenuItem(sf::Vector2f(20, 20), BACK, "images/back_button.png");
+			back_Button->_sprite.setScale(0.5, 0.5);
+			MenuItem* topScore_Button = new MenuItem(sf::Vector2f(SCREEN_WIDTH / 2 - 220, 500), TOPSCORE, "images/top_score_button.png");
+			MenuItem* play_Button = new MenuItem(sf::Vector2f(SCREEN_WIDTH / 2 - 220, 350), PLAY_READY, "images/PLAY_button.png");
 
+			_menuItems.insert(std::pair<std::string, MenuItem*>("play_Button", play_Button));
 			_menuItems.insert(std::pair<std::string, MenuItem*>("back_Button", back_Button));
 			_menuItems.insert(std::pair<std::string, MenuItem*>("topScore_Button", topScore_Button));
 			break;
@@ -182,11 +201,51 @@ void Menu::Init_PLAYING()
 		
 
 		initialized = true;
-		std::cout << "PLAY initialized";
+		std::cout << "GAME_PREPARATION initialized";
 	}
 
 }
 
+void Menu::Init_SCORE_BOARD()
+{
+	if (initialized) {
+		return;
+		
+	}
+	else
+	{
+		std::for_each(_menuItems.begin(), _menuItems.end(), menuItemsDeallocator());
+		_menuItems.erase(_menuItems.begin(), _menuItems.end());
+
+		MenuItem* back_Button = new MenuItem(sf::Vector2f(SCREEN_WIDTH / 2 - 200, 850), BACK, "images/back_button.png");
+
+		_menuItems.insert(std::pair<std::string, MenuItem*>("back_Button", back_Button));
+	}
+	initialized = true;
+	std::cout << "SCOE_BOARD initialized";
+
+}
+
+
+void Menu::Init_READY_GAME()
+{
+	if (initialized) {
+		return;
+
+	}
+	else
+	{
+		std::for_each(_menuItems.begin(), _menuItems.end(), menuItemsDeallocator());
+		_menuItems.erase(_menuItems.begin(), _menuItems.end());
+
+		MenuItem* back_Button = new MenuItem(sf::Vector2f(SCREEN_WIDTH / 2 - 200, 850), BACK, "images/back_button.png");
+
+		_menuItems.insert(std::pair<std::string, MenuItem*>("back_Button", back_Button));
+	}
+	initialized = true;
+	std::cout << "READY_GAME initialized";
+
+}
 
 
 void Menu::MenuLoop()
@@ -203,9 +262,9 @@ void Menu::MenuLoop()
 			game_selection_Menu();
 			break;
 		}
-		case Menu::PLAYING:
+		case Menu::GAME_PREPARATION:
 		{
-			playing();
+			game_preparation();
 			break;
 		}
 		case Menu::SCORE_BOARD:
@@ -213,18 +272,24 @@ void Menu::MenuLoop()
 			score_board();
 			break;
 		}
+		case Menu::READY_TO_PLAY:
+		{
+			ready_game();
+			break;
+		}
 	}
 	
 	_mainWindow.display();
+	//client->sendData(makeClientData());
 	
 }
 
 
 
 
-void Menu::playing()
+void Menu::game_preparation()
 {
-	Init_PLAYING();
+	Init_GAME_PREPARATION();
 	Draw();
 	playing_Update();
 }
@@ -239,7 +304,16 @@ void Menu::game_selection_Menu()
 
 void Menu::score_board()
 {
+	Init_SCORE_BOARD();
+	Draw();
+	playing_Update();
+}
 
+void Menu::ready_game()
+{
+	Init_READY_GAME();
+	Draw();
+	playing_Update();
 }
 
 
@@ -254,31 +328,78 @@ void Menu::Draw()
 
 	//Game Name on screen top
 	std::string name = "";
+	std::string string_lvl = "";
+	std::string string_topScore = "			TOP Score \n The best five results:";
+	std::string topScore_text = "Look at the wall";
+
+	std::string playInfo = "";
+
+
 	switch (_currentGame)
 	{
 	case Menu::SMASH_IT:
 		name = "Smash It";
+		playInfo = "Smash the \"Start\" baloon on the wall and game will start \nYou have 60 seconds to smash as many balls as possible \n							use any part of your body";
 		break;
 	case Menu::TIME_CLIMB:
+		playInfo = "Touch the \"Start\" button on the wall and game will start \nTouch all targets in the correct order as fast as you can \n							use any part of your body";
 		name = "Time climb";
 		break;
 	case Menu::LABYRINTH:
+		playInfo = "Touch the \"Start\" button on the wall and game will start \n			Touch the \"finish\" button as fast as you can \nwithout touching electrical parts with any part of the body";
 		name = "Labyrinth";
+		switch (_currentLabyrinthLevel)
+		{
+		case Menu::LEVEL_1:
+			string_lvl = "Level 1";
+			break;
+		case Menu::LEVEL_2:
+			string_lvl = "Level 2";
+			break;
+		case Menu::LEVEL_3:
+			string_lvl = "Level 3";
+			break;
+		case Menu::LEVEL_4:
+			string_lvl = "Level 4";
+			break;
+		case Menu::LEVEL_5:
+			string_lvl = "Level 5";
+			break;
+		default:
+			break;
+		}
 		break;
 	case Menu::AEROHOCKEY:
+		playInfo = "		When 2 players touch the square at the same time \n									the game will begin";
 		name = "AeroHockey";
 		break;
 	case Menu::TERRITORY:
+		playInfo = "		When 2 players touch the square at the same time \n									the game will begin";
 		name = "Territory";
 		break;
 	default:
 		break;
 	}
-	std::ostringstream nameStr;
-	nameStr << name;
+
 	sf::Text text(name, _font, 70);
-	text.setPosition(SCREEN_WIDTH / 2 - 150, 0);
+	text.setPosition(SCREEN_WIDTH / 2 - 175, 0);
 	_mainWindow.draw(text);
+
+	sf::Text text_lvl(string_lvl, _font, 70);
+	text_lvl.setPosition(SCREEN_WIDTH / 2 - 130, 140);
+	if (_menuState == GAME_PREPARATION) _mainWindow.draw(text_lvl);
+
+	sf::Text text_topScore(string_topScore, _font, 70);
+	text_topScore.setPosition(SCREEN_WIDTH / 2 - 370, 140);
+	if (_menuState == SCORE_BOARD) _mainWindow.draw(text_topScore);
+
+	sf::Text text_topScore_info(topScore_text, _font, 70);
+	text_topScore_info.setPosition(SCREEN_WIDTH / 2 - 240, 450);
+	if (_menuState == SCORE_BOARD) _mainWindow.draw(text_topScore_info);
+
+	sf::Text playGame_info(playInfo, _font, 70);
+	playGame_info.setPosition(120, 300);
+	if (_menuState == READY_TO_PLAY) _mainWindow.draw(playGame_info);
 
 
 	std::map<std::string, MenuItem*>::iterator it;
@@ -292,12 +413,13 @@ void Menu::Draw()
 void Menu::game_selection_Menu_Update()
 {
 	buttonAction clicResult = GetMenuResponse(_mainWindow);
+	_clicData = clicResult;
 	switch (clicResult)
 	{
 	case Menu::NOTHING:
 		break;
-	case Menu::PLAY:
-		_menuState = PLAYING;
+	case Menu::PLAY_GAMESELECTION:
+		_menuState = GAME_PREPARATION;
 		initialized = false;
 		break;
 	case Menu::NEXT:
@@ -319,62 +441,39 @@ void Menu::game_selection_Menu_Update()
 	{
 	case Menu::SMASH_IT:
 		Get("mainGame")->_texture.loadFromImage(smash_It_image);
-
 		Get("leftGame")->_texture.loadFromImage(territory_image);
-		Get("leftGame")->_sprite.setTextureRect(Get("mainGame")->_sprite.getTextureRect());
-		Get("leftGame")->_sprite.setScale(0.3, 0.7);
-
 		Get("rightGame")->_texture.loadFromImage(time_climb_image);
-		Get("rightGame")->_sprite.setTextureRect(Get("mainGame")->_sprite.getTextureRect());
-		Get("rightGame")->_sprite.setScale(0.3, 0.7);
+
 		break;
 	case Menu::TIME_CLIMB:
 		Get("mainGame")->_texture.loadFromImage(time_climb_image);
-
 		Get("leftGame")->_texture.loadFromImage(smash_It_image);
-		Get("leftGame")->_sprite.setTextureRect(Get("mainGame")->_sprite.getTextureRect());
-		Get("leftGame")->_sprite.setScale(0.3, 0.7);
-
 		Get("rightGame")->_texture.loadFromImage(labyrinth_image);
-		Get("rightGame")->_sprite.setTextureRect(Get("mainGame")->_sprite.getTextureRect());
-		Get("rightGame")->_sprite.setScale(0.3, 0.7);
 		break;
 	case Menu::LABYRINTH:
 		Get("mainGame")->_texture.loadFromImage(labyrinth_image);
-
 		Get("leftGame")->_texture.loadFromImage(time_climb_image);
-		Get("leftGame")->_sprite.setTextureRect(Get("mainGame")->_sprite.getTextureRect());
-		Get("leftGame")->_sprite.setScale(0.3, 0.7);
-
 		Get("rightGame")->_texture.loadFromImage(aerohockey_image);
-		Get("rightGame")->_sprite.setTextureRect(Get("mainGame")->_sprite.getTextureRect());
-		Get("rightGame")->_sprite.setScale(0.3, 0.7);
 		break;
 	case Menu::AEROHOCKEY:
 		Get("mainGame")->_texture.loadFromImage(aerohockey_image);
-
 		Get("leftGame")->_texture.loadFromImage(labyrinth_image);
-		Get("leftGame")->_sprite.setTextureRect(Get("mainGame")->_sprite.getTextureRect());
-		Get("leftGame")->_sprite.setScale(0.3, 0.7);
-
 		Get("rightGame")->_texture.loadFromImage(territory_image);
-		Get("rightGame")->_sprite.setTextureRect(Get("mainGame")->_sprite.getTextureRect());
-		Get("rightGame")->_sprite.setScale(0.3, 0.7);
 		break;
 	case Menu::TERRITORY:
 		Get("mainGame")->_texture.loadFromImage(territory_image);
-
 		Get("leftGame")->_texture.loadFromImage(aerohockey_image);
-		Get("leftGame")->_sprite.setTextureRect(Get("mainGame")->_sprite.getTextureRect());
-		Get("leftGame")->_sprite.setScale(0.3, 0.7);
-
 		Get("rightGame")->_texture.loadFromImage(smash_It_image);
-		Get("rightGame")->_sprite.setTextureRect(Get("mainGame")->_sprite.getTextureRect());
-		Get("rightGame")->_sprite.setScale(0.3, 0.7);
+
 		break;
 	default:
 		break;
 	}
+	Get("leftGame")->_sprite.setTextureRect(Get("mainGame")->_sprite.getTextureRect());
+	Get("leftGame")->_sprite.setScale(0.3, 0.7);
+
+	Get("rightGame")->_sprite.setTextureRect(Get("mainGame")->_sprite.getTextureRect());
+	Get("rightGame")->_sprite.setScale(0.3, 0.7);
 }
 
 
@@ -382,6 +481,7 @@ void Menu::game_selection_Menu_Update()
 void Menu::playing_Update()
 {
 	buttonAction clicResult = GetMenuResponse(_mainWindow);
+	_clicData = clicResult;
 
 	switch (_currentGame)
 	{
@@ -390,66 +490,44 @@ void Menu::playing_Update()
 	case Menu::TIME_CLIMB:
 		break;
 	case Menu::LABYRINTH:
-		switch (_currentLabyrinthLevel)
+		if (_menuState == GAME_PREPARATION)
 		{
-		case Menu::LEVEL_1:
-			Get("mainLevel")->_texture.loadFromImage(level_1);
-
-			Get("leftLevel")->_texture.loadFromImage(level_5);
+			switch (_currentLabyrinthLevel)
+			{
+			case Menu::LEVEL_1:
+				Get("mainLevel")->_texture.loadFromImage(level_1);
+				Get("leftLevel")->_texture.loadFromImage(level_5);
+				Get("rightLevel")->_texture.loadFromImage(level_2);
+				break;
+			case Menu::LEVEL_2:
+				Get("mainLevel")->_texture.loadFromImage(level_2);
+				Get("leftLevel")->_texture.loadFromImage(level_1);
+				Get("rightLevel")->_texture.loadFromImage(level_3);
+				break;
+			case Menu::LEVEL_3:
+				Get("mainLevel")->_texture.loadFromImage(level_3);
+				Get("leftLevel")->_texture.loadFromImage(level_2);
+				Get("rightLevel")->_texture.loadFromImage(level_4);
+				break;
+			case Menu::LEVEL_4:
+				Get("mainLevel")->_texture.loadFromImage(level_4);
+				Get("leftLevel")->_texture.loadFromImage(level_3);
+				Get("rightLevel")->_texture.loadFromImage(level_5);
+				break;
+			case Menu::LEVEL_5:
+				Get("mainLevel")->_texture.loadFromImage(level_5);
+				Get("leftLevel")->_texture.loadFromImage(level_4);
+				Get("rightLevel")->_texture.loadFromImage(level_1);
+				break;
+			default:
+				break;
+			}
 			Get("leftLevel")->_sprite.setTextureRect(Get("mainLevel")->_sprite.getTextureRect());
 			Get("leftLevel")->_sprite.setScale(0.3, 0.7);
-
-			Get("rightLevel")->_texture.loadFromImage(level_2);
 			Get("rightLevel")->_sprite.setTextureRect(Get("mainLevel")->_sprite.getTextureRect());
 			Get("rightLevel")->_sprite.setScale(0.3, 0.7);
-			break;
-		case Menu::LEVEL_2:
-			Get("mainLevel")->_texture.loadFromImage(level_2);
-
-			Get("leftLevel")->_texture.loadFromImage(level_1);
-			Get("leftLevel")->_sprite.setTextureRect(Get("mainLevel")->_sprite.getTextureRect());
-			Get("leftLevel")->_sprite.setScale(0.3, 0.7);
-
-			Get("rightLevel")->_texture.loadFromImage(level_3);
-			Get("rightLevel")->_sprite.setTextureRect(Get("mainLevel")->_sprite.getTextureRect());
-			Get("rightLevel")->_sprite.setScale(0.3, 0.7);
-			break;
-		case Menu::LEVEL_3:
-			Get("mainLevel")->_texture.loadFromImage(level_3);
-
-			Get("leftLevel")->_texture.loadFromImage(level_2);
-			Get("leftLevel")->_sprite.setTextureRect(Get("mainLevel")->_sprite.getTextureRect());
-			Get("leftLevel")->_sprite.setScale(0.3, 0.7);
-
-			Get("rightLevel")->_texture.loadFromImage(level_4);
-			Get("rightLevel")->_sprite.setTextureRect(Get("mainLevel")->_sprite.getTextureRect());
-			Get("rightLevel")->_sprite.setScale(0.3, 0.7);
-			break;
-		case Menu::LEVEL_4:
-			Get("mainLevel")->_texture.loadFromImage(level_4);
-
-			Get("leftLevel")->_texture.loadFromImage(level_3);
-			Get("leftLevel")->_sprite.setTextureRect(Get("mainLevel")->_sprite.getTextureRect());
-			Get("leftLevel")->_sprite.setScale(0.3, 0.7);
-
-			Get("rightLevel")->_texture.loadFromImage(level_5);
-			Get("rightLevel")->_sprite.setTextureRect(Get("mainLevel")->_sprite.getTextureRect());
-			Get("rightLevel")->_sprite.setScale(0.3, 0.7);
-			break;
-		case Menu::LEVEL_5:
-			Get("mainLevel")->_texture.loadFromImage(level_5);
-
-			Get("leftLevel")->_texture.loadFromImage(level_4);
-			Get("leftLevel")->_sprite.setTextureRect(Get("mainLevel")->_sprite.getTextureRect());
-			Get("leftLevel")->_sprite.setScale(0.3, 0.7);
-
-			Get("rightLevel")->_texture.loadFromImage(level_1);
-			Get("rightLevel")->_sprite.setTextureRect(Get("mainLevel")->_sprite.getTextureRect());
-			Get("rightLevel")->_sprite.setScale(0.3, 0.7);
-			break;
-		default:
-			break;
 		}
+		
 		break;
 	case Menu::AEROHOCKEY:
 		break;
@@ -463,7 +541,9 @@ void Menu::playing_Update()
 	{
 	case Menu::NOTHING:
 		break;
-	case Menu::PLAY:
+	case Menu::PLAY_READY:
+		_menuState = READY_TO_PLAY;
+		initialized = false;
 		break;
 	case Menu::NEXT:
 		_currentLabyrinthLevel++;
@@ -474,8 +554,11 @@ void Menu::playing_Update()
 		if (_currentLabyrinthLevel < 0) _currentLabyrinthLevel = 4;
 		break;
 	case Menu::BACK:
-		_menuState = GAME_SELECTION;
+		if (_menuState == SCORE_BOARD) _menuState = GAME_PREPARATION;
+		if (_menuState == READY_TO_PLAY) _menuState = GAME_PREPARATION;
+		else _menuState = GAME_SELECTION;
 		initialized = false;
+		//sendData();
 		break;
 	case Menu::TOPSCORE:
 		_menuState = SCORE_BOARD;
@@ -486,6 +569,8 @@ void Menu::playing_Update()
 	}
 
 }
+
+
 
 bool Menu::IsExiting()//для остановки GameLoop()
 {
@@ -533,10 +618,10 @@ Menu::buttonAction Menu::GetMenuResponse(sf::RenderWindow& window)
 }
 
 
-void Menu::MenuItem::Move(sf::Vector2f pos)
-{
-	
-}
+//void Menu::MenuItem::Move(sf::Vector2f pos)
+//{
+//	
+//}
 
 Menu::MenuItem* Menu::Get(std::string name) const
 {
@@ -547,9 +632,15 @@ Menu::MenuItem* Menu::Get(std::string name) const
 }
 
 
-float Menu::dist2(sf::Vector2f const & p1, sf::Vector2f const & p2)
+//float Menu::dist2(sf::Vector2f const & p1, sf::Vector2f const & p2)
+//{
+//	return (p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y);
+//}
+
+int Menu::makeClientData()
 {
-	return (p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y);
+	int a = _menuState * 1000 + _currentGame*100 + _clicData*10 + _currentLabyrinthLevel;
+	return a;
 }
 
 //Menu::menuState Menu::_menuState = Menu::GAME_SELECTION;
