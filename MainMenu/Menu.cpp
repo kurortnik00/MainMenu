@@ -125,7 +125,7 @@ void Menu::Init_GAME_PREPARATION()
 
 			//_menuItems.insert(std::pair<std::string, MenuItem*>("play_Button", play_Button));
 			_menuItems.insert(std::pair<std::string, MenuItem*>("back_Button", back_Button));
-			_menuItems.insert(std::pair<std::string, MenuItem*>("topScore_Button", topScore_Button));
+			//_menuItems.insert(std::pair<std::string, MenuItem*>("topScore_Button", topScore_Button));
 			break;
 		}
 
@@ -147,8 +147,8 @@ void Menu::Init_GAME_PREPARATION()
 		{
 			MenuItem *back_Button = new MenuItem(sf::Vector2f(20, 20), BACK, "images/back_button_ru.png");
 			back_Button->_sprite.setScale(0.5, 0.5);
-			MenuItem *topScore_Button = new MenuItem(sf::Vector2f(SCREEN_WIDTH - 230, 20), TOPSCORE, "images/top_score_button_ru.png");
-			topScore_Button->_sprite.setScale(0.5, 0.5);
+			//MenuItem *topScore_Button = new MenuItem(sf::Vector2f(SCREEN_WIDTH - 230, 20), TOPSCORE, "images/top_score_button_ru.png");
+			//topScore_Button->_sprite.setScale(0.5, 0.5);
 
 			MenuItem* play_Button = new MenuItem(sf::Vector2f(SCREEN_WIDTH / 2 - 208, 900), PLAY_READY, "images/PLAY_button_ru.png");
 			MenuItem* next_Button = new MenuItem(sf::Vector2f(1530, 900), NEXT, "images/NEXT_button.png", true);
@@ -167,7 +167,7 @@ void Menu::Init_GAME_PREPARATION()
 			_menuItems.insert(std::pair<std::string, MenuItem*>("leftLevel", leftLevel));
 			_menuItems.insert(std::pair<std::string, MenuItem*>("rightLevel", rightLevel));
 			_menuItems.insert(std::pair<std::string, MenuItem*>("back_Button", back_Button));
-			_menuItems.insert(std::pair<std::string, MenuItem*>("topScore_Button", topScore_Button));
+			//_menuItems.insert(std::pair<std::string, MenuItem*>("topScore_Button", topScore_Button));
 
 			break;
 		}
@@ -267,11 +267,11 @@ void Menu::MenuLoop()
 			game_preparation();
 			break;
 		}
-		case Menu::SCORE_BOARD:
-		{
-			score_board();
-			break;
-		}
+	//	case Menu::SCORE_BOARD:
+	//	{
+	//		score_board();
+	//		break;
+	//	}
 		case Menu::READY_TO_PLAY:
 		{
 			ready_game();
@@ -398,11 +398,11 @@ void Menu::Draw()
 
 	sf::Text text_topScore(string_topScore, _font, 70);
 	text_topScore.setPosition(SCREEN_WIDTH / 2 - 370, 240);
-	if (_menuState == SCORE_BOARD) _mainWindow.draw(text_topScore);
+	//if (_menuState == SCORE_BOARD) _mainWindow.draw(text_topScore);
 
 	sf::Text text_topScore_info(topScore_text, _font, 70);
 	text_topScore_info.setPosition(SCREEN_WIDTH / 2 - 405, 350);
-	if (_menuState == SCORE_BOARD) _mainWindow.draw(text_topScore_info);
+	//if (_menuState == SCORE_BOARD) _mainWindow.draw(text_topScore_info);
 
 	
 	playGame_info.setPosition(0, 300);
@@ -486,12 +486,90 @@ void Menu::game_selection_Menu_Update()
 
 	Get("rightGame")->_sprite.setTextureRect(Get("mainGame")->_sprite.getTextureRect());
 	Get("rightGame")->_sprite.setScale(0.3, 0.7);
+
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+	{
+		bool flag = true;
+		int a = AUTO_COLIBRATION * 1000 + _currentGame * 100 + NOTHING * 10;
+		//client->sendData(a);
+
+		while (flag)
+		{
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::B))
+			{
+				flag = false;
+			}
+		}
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::M))
+	{
+		bool flag = true;
+		int a = MANUAL_COLIBRATION * 1000 + _currentGame * 100 + 1 * 10; //1 - start manualeqasion colibration
+		//client->sendData(a);
+
+		while (flag)
+		{
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num0))
+			{
+				//client->sendData(0);
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1))
+			{
+				//client->sendData(1);
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2))
+			{
+				//client->sendData(2);
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3))
+			{
+				//client->sendData(3);
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num4))
+			{
+				//client->sendData(4);
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num5))
+			{
+				//client->sendData(5);
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num6))
+			{
+				//client->sendData(6);
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num7))
+			{
+				//client->sendData(7);
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::B))
+			{
+				flag = false;
+			}
+		}
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+	{
+		bool flag = true;
+		int a = MANUAL_COLIBRATION * 1000 + _currentGame * 100 + 0 * 10; //1 - start manualeqasion colibration
+		//client->sendData(a);
+
+		while (flag)
+		{
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::B))
+			{
+				flag = false;
+			}
+		}
+	}
 }
 
 
 
 void Menu::playing_Update()
 {
+	
+
 	buttonAction clicResult = GetMenuResponse(_mainWindow);
 	_clicData = clicResult;
 
@@ -566,19 +644,22 @@ void Menu::playing_Update()
 		if (_currentLabyrinthLevel < 0) _currentLabyrinthLevel = 4;
 		break;
 	case Menu::BACK:
-		if (_menuState == SCORE_BOARD) _menuState = GAME_PREPARATION;
+		//if (_menuState == SCORE_BOARD) _menuState = GAME_PREPARATION;
 		if (_menuState == READY_TO_PLAY) _menuState = GAME_PREPARATION;
 		else _menuState = GAME_SELECTION;
 		initialized = false;
 		//sendData();
 		break;
-	case Menu::TOPSCORE:
-		_menuState = SCORE_BOARD;
-		initialized = false;
-		break;
+	//case Menu::TOPSCORE:
+		//_menuState = SCORE_BOARD;
+	//	initialized = false;
+	//	break;
 	default:
 		break;
 	}
+
+
+	
 
 }
 
@@ -630,11 +711,6 @@ Menu::buttonAction Menu::GetMenuResponse(sf::RenderWindow& window)
 }
 
 
-//void Menu::MenuItem::Move(sf::Vector2f pos)
-//{
-//	
-//}
-
 Menu::MenuItem* Menu::Get(std::string name) const
 {
 	std::map<std::string, Menu::MenuItem*>::const_iterator results = _menuItems.find(name);
@@ -644,20 +720,8 @@ Menu::MenuItem* Menu::Get(std::string name) const
 }
 
 
-//float Menu::dist2(sf::Vector2f const & p1, sf::Vector2f const & p2)
-//{
-//	return (p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y);
-//}
-
 int Menu::makeClientData()
 {
 	int a = _menuState * 1000 + _currentGame*100 + _clicData*10 + _currentLabyrinthLevel;
 	return a;
 }
-
-//Menu::menuState Menu::_menuState = Menu::GAME_SELECTION;
-//sf::RenderWindow Menu::_mainWindow;
-//sf::Image Menu::background_image;
-//sf::Texture Menu::background_texture;
-//sf::Sprite Menu::background_sprite;
-//std::map<std::string, Menu::MenuItem*> Menu::_menuItems;
